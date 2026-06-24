@@ -12,7 +12,7 @@
 
 ## Hướng dẫn cài đặt và sử dụng
 * ** Bước 1: Clone repository
-* git clone [https://github.com/NguyenDinnnn/SentimentAndRecommedation.git](https://github.com/NguyenDinnnn/SentimentAndRecommedation.git)
+* git clone [https://github.com/NguyenDinnnn/SentimentAndRecommedation.git](https://github.com/NguyenDinnnn/SandR.git)
 * cd SentimentAndRecommedation
 * ** Bước 2: Cài đặt thư viện (Khuyến nghị sử dụng môi trường ảo (virtual environment). Chạy lệnh sau để cài đặt các thư viện cần thiết)
 * pip install -r requirements.txt
