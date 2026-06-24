@@ -106,18 +106,14 @@ def get_similar_products(db, product_id: int, top_n: int = 4):
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-print("Dang tai AI PhoBERT...")
-MODEL_PATH = "./phobert"
+print("Dang tai AI PhoBERT tu Hugging Face hub...")
 
-if not os.path.exists(MODEL_PATH):
-    print("Chay Mock AI Mode (Khong tim thay model that).")
+try:
+    from phobert.phobert import tokenizer, model
+    print("Da load AI PhoBERT tu Hugging Face hub!")
+except Exception as e:
+    print("Chay Mock AI Mode (Khong tai duoc model tu Hugging Face):", e)
     tokenizer, model = None, None
-else:
-    from transformers import AutoTokenizer, AutoModelForSequenceClassification
-    tokenizer = PhobertTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, local_files_only=True)
-    model.eval()
-    print("Da load AI PhoBERT!")
 
 label_map = {1: "Rất tệ", 2: "Tệ", 3: "Trung tính", 4: "Tốt", 5: "Tuyệt vời"} 
 
@@ -372,8 +368,11 @@ async def evaluate_review(request: ReviewRequest):
     phobert_score = 0
     if model and tokenizer:
         inputs = tokenizer(text, return_tensors="pt", padding='max_length', truncation=True, max_length=120)
+        device = next(model.parameters()).device
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+        star_feature = torch.tensor([[float(star_score) / 5.0]], dtype=torch.float).to(device)
         with torch.no_grad():
-            logits = model(**inputs).logits
+            logits = model(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'], star_feature=star_feature)
             predicted_class_id = torch.argmax(logits, dim=1).item()
             phobert_to_score = {1: 1, 4: 2, 0: 3, 3: 4, 2: 5}
             phobert_score = phobert_to_score.get(predicted_class_id, 3)
