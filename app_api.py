@@ -2,6 +2,7 @@ import os
 import torch
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -9,8 +10,11 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship, joinedload
 from sqlalchemy.sql.expression import func
 from transformers import PhobertTokenizer
+from dotenv import load_dotenv
 
 # ================= 1. DATABASE SETUP =================
+# Load environment variables from .env if present
+load_dotenv()
 engine = create_engine("sqlite:///shopAI.db", connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -116,6 +120,18 @@ except Exception as e:
     tokenizer, model = None, None
 
 label_map = {1: "Rất tệ", 2: "Tệ", 3: "Trung tính", 4: "Tốt", 5: "Tuyệt vời"} 
+
+
+@app.get("/config.js")
+def config_js():
+    """Serve a small JS snippet that sets window.APP_CONFIG.apiBaseUrl from env vars.
+    This lets the frontend read API base URL at runtime without hardcoding.
+    """
+    # Prefer BASE_DOMAIN, fallback to FRONTEND_API_URL, then to localhost
+    domain = os.getenv("BASE_DOMAIN") or os.getenv("FRONTEND_API_URL") or "http://localhost:8000"
+    api_base = domain.rstrip('/') + '/api'
+    js = f"window.APP_CONFIG = {{ apiBaseUrl: '{api_base}' }};"
+    return Response(content=js, media_type="application/javascript")
 
 # ================= 3. API ENDPOINTS =================
 
