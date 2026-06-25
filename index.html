@@ -140,7 +140,7 @@
     <!-- Load runtime config (served by backend) so frontend reads API URL from env -->
     <script src="/config.js"></script>
     <script>
-        const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.apiBaseUrl) ? window.APP_CONFIG.apiBaseUrl : "http://localhost:8000/api";
+        const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.apiBaseUrl) ? window.APP_CONFIG.apiBaseUrl : `${window.location.origin}/api`;
         const formatMoney = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         
         let activeOrderItemId = null;

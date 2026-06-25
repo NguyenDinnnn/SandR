@@ -1,7 +1,7 @@
 import os
 import torch
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -123,12 +123,14 @@ label_map = {1: "Rất tệ", 2: "Tệ", 3: "Trung tính", 4: "Tốt", 5: "Tuy�
 
 
 @app.get("/config.js")
-def config_js():
+def config_js(request: Request):
     """Serve a small JS snippet that sets window.APP_CONFIG.apiBaseUrl from env vars.
     This lets the frontend read API base URL at runtime without hardcoding.
     """
-    # Prefer BASE_DOMAIN, fallback to FRONTEND_API_URL, then to localhost
-    domain = os.getenv("BASE_DOMAIN") or os.getenv("FRONTEND_API_URL") or "http://localhost:8000"
+    # Prefer BASE_DOMAIN, then FRONTEND_API_URL, then use the current request origin
+    domain = os.getenv("BASE_DOMAIN") or os.getenv("FRONTEND_API_URL")
+    if not domain:
+        domain = str(request.base_url).rstrip('/')
     api_base = domain.rstrip('/') + '/api'
     js = f"window.APP_CONFIG = {{ apiBaseUrl: '{api_base}' }};"
     return Response(content=js, media_type="application/javascript")
