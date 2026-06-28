@@ -12,9 +12,10 @@
 
 ## Hướng dẫn cài đặt và sử dụng
 * ** Bước 1: Clone repository
-* git clone [https://github.com/NguyenDinnnn/SentimentAndRecommedation.git](https://github.com/NguyenDinnnn/SandR.git)
-* cd SentimentAndRecommedation
+* git clone [https://github.com/NguyenDinnnn/SandR.git]
+* cd SandR
 * ** Bước 2: Cài đặt thư viện (Khuyến nghị sử dụng môi trường ảo (virtual environment). Chạy lệnh sau để cài đặt các thư viện cần thiết)
+* python3 -m venv .venv
 * pip install -r requirements.txt
 * ** Bước 3: Khởi tạo CSDL (Khởi tạo database SQLite và nạp dữ liệu tồn kho ban đầu)
 * python init_db.py
@@ -23,8 +24,7 @@
 * python app_api.py
 * Sau khi server chạy, bạn có thể mở file index.html bằng cách truy cập (http://localhost:5500/#home) trên trình duyệt để sử dụng giao diện hệ thống.
 * **** Trong trường hợp chạy Bước 4 gặp lỗi, hãy tạo 1 môi trường ảo .venv sau đó truy cập vào môi trường ảo đó.
-* **** ** Sau đó chạy Backend bằng câu lệnh: uvicorn app_api:app --reload
-* **** ** Sau đó chạy Frontend bằng câu lệnh: python -m http.server 5500  
+* **** ** Sau đó chạy Server bằng câu lệnh: uvicorn app_api:app --host 0.0.0.0 --port 8093 --reload
 
 ## 📂 Cấu trúc dự án
 

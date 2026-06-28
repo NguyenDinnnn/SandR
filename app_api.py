@@ -2,7 +2,7 @@ import os
 import torch
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -134,6 +134,19 @@ def config_js(request: Request):
     api_base = domain.rstrip('/') + '/api'
     js = f"window.APP_CONFIG = {{ apiBaseUrl: '{api_base}' }};"
     return Response(content=js, media_type="application/javascript")
+
+# ================= 3.0 HOMEPAGE ENDPOINTS =================
+@app.get("/")
+async def index():
+    return FileResponse("templates/index.html")
+
+@app.get("/favicon.svg")
+async def favicon():
+    return FileResponse("templates/favicon.svg", media_type="image/svg+xml")
+
+@app.get("/style.css")
+async def style():
+    return FileResponse("templates/style.css", media_type="text/css")
 
 # ================= 3. API ENDPOINTS =================
 
